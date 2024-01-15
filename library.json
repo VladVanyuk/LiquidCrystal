@@ -1,0 +1,14 @@
+{
+  "name": "LiquidCrystal",
+  "keywords": "oop, base, abstract, virtual, class, LCD, I2C, LiquidCrystal, LiquidCrystal_I2C",
+  "description": "Virtual base class wrapper for LiquidCrystal and LiquidCrystal_I2C libraries",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/VladVanyuk/LiquidCrystal.git"
+  },
+  "frameworks": "arduino",
+  "platforms":
+  [
+  ]
+}
