@@ -9,6 +9,7 @@ For new versions check:
 https://github.com/VladVanyuk/BaseLiquidCrystal  
 
 Based on libaries:
-https://github.com/arduino-libraries/LiquidCrystal
-https://github.com/johnrickman/LiquidCrystal_I2C
+
+LiquidCrystal:  https://github.com/arduino-libraries/LiquidCrystal
+LiquidCrystal_I2C:  https://github.com/johnrickman/LiquidCrystal_I2C
 
