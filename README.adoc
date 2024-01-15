@@ -1,6 +1,6 @@
 :repository-name: LiquidCrystal
 
-= {repository-name}=
+= {repository-name} =
 
 This library allows an Arduino board to control liquid crystal displays (LCDs) based on the Hitachi HD44780 (or a compatible) chipset, which is found on most text-based LCDs.
 Virtual base class for LiquidCrystal libraries, allows you to use one library for LiquidCrystal and LiquidCrystal_I2C displays. Allows you to create general LCD object and use same methods for different derived classes.
@@ -11,5 +11,6 @@ https://github.com/VladVanyuk/BaseLiquidCrystal
 Based on libaries:
 
 LiquidCrystal:  https://github.com/arduino-libraries/LiquidCrystal
+
 LiquidCrystal_I2C:  https://github.com/johnrickman/LiquidCrystal_I2C
 
