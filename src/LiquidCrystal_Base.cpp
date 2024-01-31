@@ -1,5 +1,9 @@
 #include "LiquidCrystal_Base.h"
 
+#if (defined TYPE_LCD) && (defined TYPE_LCD_I2C)
+#error "Only one type of LCD can be defined"
+#endif
+
 void LiquidCrystal_Base::init(uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize)
 {
   _cols = lcd_cols;
@@ -10,40 +14,69 @@ void LiquidCrystal_Base::init(uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsi
     _displayfunction |= LCD_2LINE;
   }
 
-  if ((charsize != 0) && (_rows == 1))
+  if ((charsize != LCD_5x8DOTS) && (_rows == 1))
   {
     _displayfunction |= LCD_5x10DOTS;
   }
 }
 
+
+void LiquidCrystal_Base::init(uint8_t mode = LCD_4BITMODE) 
+{
+  uint8_t charsize = LCD_5x8DOTS;
+  if (_displayfunction & LCD_5x10DOTS)
+  {
+    charsize = LCD_5x10DOTS;
+  }
+
+  if (mode == LCD_8BITMODE)
+  {
+    _displayfunction = LCD_8BITMODE | LCD_1LINE | charsize;
+  }
+  else
+  {
+    // we default to 4 bit mode
+    _displayfunction = LCD_4BITMODE | LCD_1LINE | charsize;
+  }
+
+  if (_rows > 1)
+  {
+    _displayfunction |= LCD_2LINE;
+  }
+
+ // _displayfunction = mode | ((_rows > 1) ? LCD_2LINE : LCD_1LINE) | charsize;
+}
+
+
 void LiquidCrystal_Base::begin()
 {
   // put the LCD into 4 bit or 8 bit mode
-  if (!(_displayfunction & LCD_8BITMODE))
+  if (! (_displayfunction & LCD_8BITMODE))
   {
+       
     // this is according to the Hitachi HD44780 datasheet
     // figure 24, pg 46
-
     // we start in 8bit mode, try to set 4 bit mode
-    write4bits(0x03);        // <<4
+    send(0x03, INIT_MODE);
     delayMicroseconds(4500); // wait min 4.1ms
 
-    // second try
-    write4bits(0x03);        // <<4
+    // // second try
+    send(0x03, INIT_MODE);
     delayMicroseconds(4500); // wait min 4.1ms
 
     // third go!
-    write4bits(0x03); // <<4
+    send(0x03, INIT_MODE);
     delayMicroseconds(150);
 
     // finally, set to 4-bit interface
-    write4bits(0x02); // <<4
+    send(0x02, INIT_MODE);
+    delayMicroseconds(150);
   }
   else
   {
     // this is according to the Hitachi HD44780 datasheet
     // page 45 figure 23
-
+    
     // Send function set command sequence
     command(LCD_FUNCTIONSET | _displayfunction);
     delayMicroseconds(4500); // wait more than 4.1 ms
@@ -54,18 +87,17 @@ void LiquidCrystal_Base::begin()
 
     // third go
     command(LCD_FUNCTIONSET | _displayfunction);
+    delayMicroseconds(150);
   }
-
+  
   // set # lines, font size, etc.
   command(LCD_FUNCTIONSET | _displayfunction);
 
   // turn the display on with no cursor or blinking default
   _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
   display();
-
-  // clear it off
   clear();
-
+  
   // Initialize to default text direction (for romance languages)
   _displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
   // set the entry mode
@@ -187,3 +219,8 @@ void LiquidCrystal_Base::printstr(const char c[])
   // it's here so the user sketch doesn't have to be changed
   print(c);
 }
+
+// inline void LiquidCrystal_Base::command(uint8_t value)
+// {
+// 	send(value, COMMAND);
+// }

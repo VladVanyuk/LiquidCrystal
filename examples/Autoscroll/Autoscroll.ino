@@ -31,6 +31,8 @@
  by Tom Igoe
  modified 7 Nov 2016
  by Arturo Guadalupi
+ modified 30 Nov 2024
+ by Vladislav Vanyuk
 
  This example code is in the public domain.
 
@@ -38,40 +40,64 @@
  https://github.com/arduino-libraries/LiquidCrystal
 */
 
+// #define TYPE_LCD
+#define TYPE_LCD_I2C
+#include <LiquidCrystal_Base.h>
+
+LiquidCrystal_Base *lcd;
+
+#if (defined TYPE_LCD)
 // include the library code:
 #include <LiquidCrystal.h>
-
 // initialize the library by associating any needed LCD interface pin
 // with the Arduino pin number it is connected to
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+LiquidCrystal lcd_normal(rs, en, d4, d5, d6, d7);
+
+#elif (defined TYPE_LCD_I2C)
+
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd_i2c(0x27, 20, 4); //(0x27, 16, 2)
+
+#endif
+
+
 
 void setup() {
-  // set up the LCD's number of columns and rows:
-  lcd.begin(16, 2);
+  Serial.begin(9600);
+
+#ifdef TYPE_LCD
+  lcd = &lcd_normal;
+  Serial.println("normal");
+#elif defined (TYPE_LCD_I2C)
+  lcd = &lcd_i2c;
+  Serial.println("i2c");
+#endif
+  lcd->begin(20, 4);
+  lcd->clear();
 }
 
 void loop() {
   // set the cursor to (0,0):
-  lcd.setCursor(0, 0);
+  lcd->setCursor(0, 0);
   // print from 0 to 9:
   for (int thisChar = 0; thisChar < 10; thisChar++) {
-    lcd.print(thisChar);
+    lcd->print(thisChar);
     delay(500);
   }
 
   // set the cursor to (16,1):
-  lcd.setCursor(16, 1);
+  lcd->setCursor(16, 1);
   // set the display to automatically scroll:
-  lcd.autoscroll();
+  lcd->autoscroll();
   // print from 0 to 9:
   for (int thisChar = 0; thisChar < 10; thisChar++) {
-    lcd.print(thisChar);
+    lcd->print(thisChar);
     delay(500);
   }
   // turn off automatic scrolling
-  lcd.noAutoscroll();
+  lcd->noAutoscroll();
 
   // clear screen for the next loop:
-  lcd.clear();
+  lcd->clear();
 }

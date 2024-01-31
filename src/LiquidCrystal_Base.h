@@ -43,11 +43,20 @@
 #define LCD_5x10DOTS 0x04
 #define LCD_5x8DOTS 0x00
 
+#define LCD_DEFAULT_COLS 20
+#define LCD_DEFAULT_ROWS 4
+
+#define COMMAND                 0
+#define DATA                    1
+#define INIT_MODE               2
+
 class LiquidCrystal_Base : public Print
 {
 public:
-    void init(uint8_t lcd_cols,  uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS);
-    void begin();
+    virtual void init(uint8_t lcd_cols,  uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS);
+    virtual void init(uint8_t mode = LCD_4BITMODE); 
+    virtual void begin();
+    virtual void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_4BITMODE) = 0;
     void clear();
     void home();
     void noDisplay();
@@ -66,19 +75,22 @@ public:
     void setCursor(uint8_t col, uint8_t row, uint8_t offsets[]);
     void printstr(const char[]);
 
-    virtual size_t write(uint8_t);
+    virtual void setCursor(uint8_t col, uint8_t row);
     virtual void command(uint8_t value);
-    virtual void write4bits(uint8_t value);
-
+    virtual size_t write(uint8_t); //=0
+    virtual void write4bits(uint8_t value) = 0;
+    // virtual void write8bits(uint8_t value);
+    virtual void send(uint8_t value,  uint8_t mode) = 0;
+    // using Print::write;
     uint8_t _displayfunction;
     uint8_t _displaycontrol;
     uint8_t _displaymode;
 
-    uint8_t _cols;
-    uint8_t _rows;
+    uint8_t _cols = LCD_DEFAULT_COLS;
+    uint8_t _rows = LCD_DEFAULT_ROWS;
 
 private:
-    virtual void send(uint8_t, uint8_t);
+    //virtual void send(uint8_t, uint8_t);
 };
 
 #endif
