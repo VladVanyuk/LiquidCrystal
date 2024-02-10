@@ -31,6 +31,8 @@
  by Tom Igoe
  modified 7 Nov 2016
  by Arturo Guadalupi
+ modified 2 Feb 2024
+ by Vladislav Vanyuk
 
  This example code is in the public domain.
 
@@ -40,25 +42,41 @@
 */
 
 // include the library code:
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_Base.h>
 
+#define LCD_TYPE 1 // 0 - LCD, 1 - LCD_I2C
+
+LiquidCrystal_Base *lcd;
+
+#if (LCD_TYPE == 0)
 // initialize the library by associating any needed LCD interface pin
 // with the Arduino pin number it is connected to
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+LiquidCrystal lcd_normal(rs, en, d4, d5, d6, d7);
+#elif (LCD_TYPE == 1)
+LiquidCrystal_I2C lcd_i2c(0x27, 16, 2); //(0x27, 20, 4)
+#else
+error("Please select the LCD type")
+#endif
 
 void setup() {
+#if (LCD_TYPE == 0)
+  lcd = &lcd_normal;
+#elif (LCD_TYPE == 1)
+  lcd = &lcd_i2c;
+#endif
+
   // set up the LCD's number of columns and rows:
-  lcd.begin(16, 2);
-  // Print a message to the LCD.
-  lcd.print("hello, world!");
+  lcd->begin(16, 2);
+  // Print a message to the LCD
+  lcd->print("Cursor Blinking");
 }
 
 void loop() {
   // Turn off the blinking cursor:
-  lcd.noBlink();
+  lcd->noBlink();
   delay(3000);
   // Turn on the blinking cursor:
-  lcd.blink();
+  lcd->blink();
   delay(3000);
 }

@@ -1,5 +1,4 @@
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+#include <LiquidCrystal_Base.h>
 
 uint8_t bell[8] = {0x4, 0xe, 0xe, 0xe, 0x1f, 0x0, 0x4};
 uint8_t note[8] = {0x2, 0x3, 0x2, 0xe, 0x1e, 0xc, 0x0};
@@ -11,56 +10,56 @@ uint8_t cross[8] = {0x0, 0x1b, 0xe, 0x4, 0xe, 0x1b, 0x0};
 uint8_t retarrow[8] = {0x1, 0x1, 0x5, 0x9, 0x1f, 0x8, 0x4};
 
 uint8_t happy[8] =
-	{
-		0b00000,
-		0b10001,
-		0b00000,
-		0b00000,
-		0b10001,
-		0b01110,
-		0b00000,
-		0b00000,
+{
+	0b00000,
+	0b10001,
+	0b00000,
+	0b00000,
+	0b10001,
+	0b01110,
+	0b00000,
+	0b00000
 };
 
 uint8_t wow[8] =
-	{
-		0b00000,
-		0b10001,
-		0b00000,
-		0b01110,
-		0b10001,
-		0b01110,
-		0b00000,
-		0b00000,
+{
+	0b00000,
+	0b10001,
+	0b00000,
+	0b01110,
+	0b10001,
+	0b01110,
+	0b00000,
+	0b00000
 };
 
 uint8_t anchor[8] =
-	{
-		0b01110,
-		0b01010,
-		0b01110,
-		0b00100,
-		0b10101,
-		0b10101,
-		0b01110,
-		0b00100};
+{
+	0b01110,
+	0b01010,
+	0b01110,
+	0b00100,
+	0b10101,
+	0b10101,
+	0b01110,
+	0b00100
+};
 
 uint8_t snow[8] =
-	{
-		0b01000,
-		0b11101,
-		0b01011,
-		0b00001,
-		0b00100,
-		0b01110,
-		0b00100,
-		0b10000};
+{
+	0b01000,
+	0b11101,
+	0b01011,
+	0b00001,
+	0b00100,
+	0b01110,
+	0b00100,
+	0b10000
+};
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 LiquidCrystal_I2C lcd2(0x26, 16, 2);
-
-LiquidCrystal_I2C *lcd_ptr;
 
 void setup()
 {
@@ -94,14 +93,27 @@ void keyCodes2004(uint8_t i)
 	lcd.print("Codes 0x");
 	lcd.print(i, HEX);
 	lcd.print("-0x");
-	lcd.print(i + 16, HEX);
+	lcd.print(i + 60, HEX);
 	lcd.setCursor(0, 1);
 
-	for (int j = 0; j < 16; j++)
+	for (int j = 0; j < 20; j++)
 	{
 		lcd.write(i + j);
 	}
-	
+
+	i+=20;
+	lcd.setCursor(0, 2);
+	for (int j = 0; j < 20; j++)
+	{
+		lcd.write(i + j);
+	}
+
+	i+=20;
+	lcd.setCursor(0, 3);
+	for (int j = 0; j < 20; j++)
+	{
+		lcd.write(i + j);
+	}
 }
 
 void keyCodes1602(uint8_t i)
@@ -117,22 +129,21 @@ void keyCodes1602(uint8_t i)
 	{
 		lcd2.write(i + j);
 	}
-	
 }
 
 // display all keycodes
 void displayKeyCodes(void)
 {
+  // symbols 0x10-0x20 are usualy shown as empty 
 	uint8_t i = 0;
-
 	while (1)
 	{
 
 		keyCodes2004(i);
 		keyCodes1602(i);
-		delay(5000);
+		delay(10000);
 
-    i += 16;
+		i += 16;
 	}
 }
 

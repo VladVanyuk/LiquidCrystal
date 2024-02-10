@@ -28,6 +28,8 @@ TIP: To find the latest versions, refer to https://github.com/VladVanyuk/BaseLiq
 
 * Added https://github.com/MartyMacGyver/Arduino_I2C_Scanner/tree/masterp[I2C_scanner] in examples
 
+* Added https://github.com/mrkaleArduinoLib/LiquidCrystal_I2C/tree/master[Complete Test] in examples. Also added readme file. 
+
 === License
 This project is released under a {License} License.
 

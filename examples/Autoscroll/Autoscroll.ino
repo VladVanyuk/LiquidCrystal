@@ -31,7 +31,7 @@
  by Tom Igoe
  modified 7 Nov 2016
  by Arturo Guadalupi
- modified 30 Nov 2024
+ modified 2 Feb 2024
  by Vladislav Vanyuk
 
  This example code is in the public domain.
@@ -40,28 +40,26 @@
  https://github.com/arduino-libraries/LiquidCrystal
 */
 
+
+// choose what connection type your display is
 // #define TYPE_LCD
 #define TYPE_LCD_I2C
+
+// include the library code:
 #include <LiquidCrystal_Base.h>
 
+// virtual base class pointer to an object 
 LiquidCrystal_Base *lcd;
 
 #if (defined TYPE_LCD)
-// include the library code:
-#include <LiquidCrystal.h>
 // initialize the library by associating any needed LCD interface pin
 // with the Arduino pin number it is connected to
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd_normal(rs, en, d4, d5, d6, d7);
 
 #elif (defined TYPE_LCD_I2C)
-
-#include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd_i2c(0x27, 20, 4); //(0x27, 16, 2)
-
+LiquidCrystal_I2C lcd_i2c(0x27, 16, 2) //(0x27, 20, 4)
 #endif
-
-
 
 void setup() {
   Serial.begin(9600);

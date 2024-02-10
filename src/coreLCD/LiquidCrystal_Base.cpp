@@ -1,22 +1,20 @@
 #include "LiquidCrystal_Base.h"
 
-#if (defined TYPE_LCD) && (defined TYPE_LCD_I2C)
-#error "Only one type of LCD can be defined"
-#endif
-
 void LiquidCrystal_Base::init(uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize)
 {
   _cols = lcd_cols;
   _rows = lcd_rows;
 
+  _displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
+
   if (_rows > 1)
   {
-    _displayfunction |= LCD_2LINE;
+    setBitFlag(_displayfunction, LCD_2LINE);
   }
 
   if ((charsize != LCD_5x8DOTS) && (_rows == 1))
   {
-    _displayfunction |= LCD_5x10DOTS;
+    setBitFlag(_displayfunction, LCD_5x10DOTS);
   }
 }
 
@@ -24,24 +22,18 @@ void LiquidCrystal_Base::init(uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsi
 void LiquidCrystal_Base::init(uint8_t mode = LCD_4BITMODE) 
 {
   uint8_t charsize = LCD_5x8DOTS;
-  if (_displayfunction & LCD_5x10DOTS)
+  
+  // if (_displayfunction & LCD_5x10DOTS)
+  if(checkBitFlag(_displayfunction, LCD_5x10DOTS))
   {
     charsize = LCD_5x10DOTS;
   }
 
-  if (mode == LCD_8BITMODE)
-  {
-    _displayfunction = LCD_8BITMODE | LCD_1LINE | charsize;
-  }
-  else
-  {
-    // we default to 4 bit mode
-    _displayfunction = LCD_4BITMODE | LCD_1LINE | charsize;
-  }
+   _displayfunction = mode | LCD_1LINE | charsize;
 
   if (_rows > 1)
   {
-    _displayfunction |= LCD_2LINE;
+    setBitFlag(_displayfunction, LCD_2LINE);
   }
 
  // _displayfunction = mode | ((_rows > 1) ? LCD_2LINE : LCD_1LINE) | charsize;
@@ -51,7 +43,8 @@ void LiquidCrystal_Base::init(uint8_t mode = LCD_4BITMODE)
 void LiquidCrystal_Base::begin()
 {
   // put the LCD into 4 bit or 8 bit mode
-  if (! (_displayfunction & LCD_8BITMODE))
+  // if (! (_displayfunction & LCD_8BITMODE))
+  if(!checkBitFlag(_displayfunction, LCD_8BITMODE))
   {
        
     // this is according to the Hitachi HD44780 datasheet
@@ -97,7 +90,7 @@ void LiquidCrystal_Base::begin()
   _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
   display();
   clear();
-  
+
   // Initialize to default text direction (for romance languages)
   _displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
   // set the entry mode
@@ -113,6 +106,19 @@ void LiquidCrystal_Base::clear()
   delayMicroseconds(2000);   // this command takes a long time!
 }
 
+// Clear particular segment of a row
+void LiquidCrystal_Base::clear(uint8_t rowStart, uint8_t colStart, uint8_t colCnt) {
+  // Maintain input parameters
+  rowStart = constrain(rowStart, 0, _rows - 1);
+  colStart = constrain(colStart, 0, _cols - 1);
+  colCnt   = constrain(colCnt,   0, _cols - colStart);
+  // Clear segment
+  setCursor(colStart, rowStart);
+  for (uint8_t i = 0; i < colCnt; i++) write(' ');
+  // Go to segment start
+  setCursor(colStart, rowStart);
+}
+
 void LiquidCrystal_Base::home()
 {
   command(LCD_RETURNHOME); // set cursor position to zero
@@ -121,36 +127,36 @@ void LiquidCrystal_Base::home()
 // Turn the display on/off (quickly)
 void LiquidCrystal_Base::noDisplay()
 {
-  _displaycontrol &= ~LCD_DISPLAYON;
+  clearBitFlag(_displaycontrol, LCD_DISPLAYON);
   command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 void LiquidCrystal_Base::display()
 {
-  _displaycontrol |= LCD_DISPLAYON;
+  setBitFlag(_displaycontrol, LCD_DISPLAYON);
   command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 
 // Turns the underline cursor on/off
 void LiquidCrystal_Base::noCursor()
 {
-  _displaycontrol &= ~LCD_CURSORON;
+  clearBitFlag(_displaycontrol, LCD_CURSORON);
   command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 void LiquidCrystal_Base::cursor()
 {
-  _displaycontrol |= LCD_CURSORON;
+  setBitFlag(_displaycontrol, LCD_CURSORON);
   command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 
 // Turn on and off the blinking cursor
 void LiquidCrystal_Base::noBlink()
 {
-  _displaycontrol &= ~LCD_BLINKON;
+  clearBitFlag(_displaycontrol, LCD_BLINKON);
   command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 void LiquidCrystal_Base::blink()
 {
-  _displaycontrol |= LCD_BLINKON;
+  setBitFlag(_displaycontrol, LCD_BLINKON);
   command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 
@@ -167,28 +173,28 @@ void LiquidCrystal_Base::scrollDisplayRight(void)
 // This is for text that flows Left to Right
 void LiquidCrystal_Base::leftToRight(void)
 {
-  _displaymode |= LCD_ENTRYLEFT;
+  setBitFlag(_displaymode, LCD_ENTRYLEFT);
   command(LCD_ENTRYMODESET | _displaymode);
 }
 
 // This is for text that flows Right to Left
 void LiquidCrystal_Base::rightToLeft(void)
 {
-  _displaymode &= ~LCD_ENTRYLEFT;
+  clearBitFlag(_displaymode, LCD_ENTRYLEFT);
   command(LCD_ENTRYMODESET | _displaymode);
 }
 
 // This will 'right justify' text from the cursor
 void LiquidCrystal_Base::autoscroll(void)
 {
-  _displaymode |= LCD_ENTRYSHIFTINCREMENT;
+  setBitFlag(_displaymode, LCD_ENTRYSHIFTINCREMENT);
   command(LCD_ENTRYMODESET | _displaymode);
 }
 
 // This will 'left justify' text from the cursor
 void LiquidCrystal_Base::noAutoscroll(void)
 {
-  _displaymode &= ~LCD_ENTRYSHIFTINCREMENT;
+  clearBitFlag(_displaymode, LCD_ENTRYSHIFTINCREMENT);
   command(LCD_ENTRYMODESET | _displaymode);
 }
 
@@ -220,7 +226,15 @@ void LiquidCrystal_Base::printstr(const char c[])
   print(c);
 }
 
-// inline void LiquidCrystal_Base::command(uint8_t value)
-// {
-// 	send(value, COMMAND);
-// }
+/*********** mid level commands, for sending data/cmds */
+
+void LiquidCrystal_Base::command(uint8_t value)
+{
+	this->send(value, COMMAND);
+}
+
+size_t LiquidCrystal_Base::write(uint8_t value)
+{
+  this->send(value, DATA);
+  return 1; // assume success
+}

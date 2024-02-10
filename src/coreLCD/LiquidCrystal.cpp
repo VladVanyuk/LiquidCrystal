@@ -5,31 +5,47 @@
 
 LiquidCrystal::LiquidCrystal(uint8_t rs, uint8_t rw, uint8_t enable,
                              uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-                             uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7)
+                             uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
+                             uint8_t cols=LCD_DEFAULT_COLS, uint8_t rows=LCD_DEFAULT_ROWS,
+                             uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_8BITMODE)
 {
-  init(0, rs, rw, enable, d0, d1, d2, d3, d4, d5, d6, d7);
+  LiquidCrystal_Base::init(cols, rows, charsize); //1
+  init(mode, rs, rw, enable, d0, d1, d2, d3, d4, d5, d6, d7);
 }
 
 LiquidCrystal::LiquidCrystal(uint8_t rs, uint8_t enable,
                              uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-                             uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7)
+                             uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
+                             uint8_t cols=LCD_DEFAULT_COLS, uint8_t rows=LCD_DEFAULT_ROWS,
+                             uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_8BITMODE)
 {
-  init(0, rs, 255, enable, d0, d1, d2, d3, d4, d5, d6, d7);
+  LiquidCrystal_Base::init(cols, rows, charsize);
+  init(mode, rs, 255, enable, d0, d1, d2, d3, d4, d5, d6, d7);
 }
 
 LiquidCrystal::LiquidCrystal(uint8_t rs, uint8_t rw, uint8_t enable,
-                             uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3)
+                             uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
+                             uint8_t cols=LCD_DEFAULT_COLS, uint8_t rows=LCD_DEFAULT_ROWS,
+                             uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_4BITMODE)
 {
-  init(1, rs, rw, enable, d0, d1, d2, d3, 0, 0, 0, 0);
+  LiquidCrystal_Base::init(cols, rows, charsize);
+  init(mode, rs, rw, enable, d0, d1, d2, d3, 0, 0, 0, 0);
 }
 
 LiquidCrystal::LiquidCrystal(uint8_t rs, uint8_t enable,
-                             uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3)
+                             uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
+                             uint8_t cols=LCD_DEFAULT_COLS, uint8_t rows=LCD_DEFAULT_ROWS,
+                             uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_4BITMODE)
 {
-  init(1, rs, 255, enable, d0, d1, d2, d3, 0, 0, 0, 0);
+  LiquidCrystal_Base::init(cols, rows, charsize);
+  init(mode, rs, 255, enable, d0, d1, d2, d3, 0, 0, 0, 0);
 }
 
-void LiquidCrystal::init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t enable,
+LiquidCrystal::~LiquidCrystal()
+{
+}
+
+void LiquidCrystal::init(uint8_t mode, uint8_t rs, uint8_t rw, uint8_t enable,
                          uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
                          uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7)
 {
@@ -46,18 +62,22 @@ void LiquidCrystal::init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t en
   _data_pins[6] = d6;
   _data_pins[7] = d7;
 
-  if (fourbitmode)
-    _displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
-  else
-    _displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
+  LiquidCrystal_Base::init(mode); //2
 }
 
-void LiquidCrystal::begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_4BITMODE)
+void LiquidCrystal::init(uint8_t lcd_cols = LCD_DEFAULT_COLS, uint8_t lcd_rows=LCD_DEFAULT_ROWS, uint8_t charsize = LCD_5x8DOTS)
 {
-  LiquidCrystal_Base::init(cols, rows, charsize);
+  LiquidCrystal_Base::init(lcd_cols, lcd_rows, charsize);
+  
+  LiquidCrystal_Base::init(getMode() ? LCD_8BITMODE : LCD_4BITMODE); 
+  
+  setRowOffsets(0x00, 0x40, 0x00 + lcd_cols, 0x40 + lcd_cols);
 
-  setRowOffsets(0x00, 0x40, 0x00 + cols, 0x40 + cols);
+  begin();
+}
 
+void LiquidCrystal::begin()
+{
   pinMode(_rs_pin, OUTPUT);
   // we can save 1 pin by not using RW. Indicate by passing 255 instead of pin#
   if (_rw_pin != 255)
@@ -67,7 +87,7 @@ void LiquidCrystal::begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8
   pinMode(_enable_pin, OUTPUT);
 
   // Do these once, instead of every time a character is drawn for speed reasons.
-  for (int i = 0; i < ((_displayfunction & LCD_8BITMODE) ? 8 : 4); ++i)
+  for (int i = 0; i < (getMode() ? 8 : 4); ++i)
   {
     pinMode(_data_pins[i], OUTPUT);
   }
@@ -75,7 +95,7 @@ void LiquidCrystal::begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8
   // SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
   // according to datasheet, we need at least 40 ms after power rises above 2.7 V
   // before sending commands. Arduino can turn on way before 4.5 V so we'll wait 50
-  delayMicroseconds(50000);
+  delayMicroseconds(5000);
   // Now we pull both RS and R/W low to begin commands
   digitalWrite(_rs_pin, LOW);
   digitalWrite(_enable_pin, LOW);
@@ -84,14 +104,14 @@ void LiquidCrystal::begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8
     digitalWrite(_rw_pin, LOW);
   }
 
-  // uint8_t _mode = LCD_4BITMODE;
-  // if ( _displayfunction & LCD_8BITMODE)
-  // {
-  //   _mode = LCD_8BITMODE;
-  // }
-  
-  //LiquidCrystal_Base::init(_mode);
   LiquidCrystal_Base::begin();
+}
+
+void LiquidCrystal::begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_4BITMODE)
+{
+  LiquidCrystal_Base::init(cols, rows, charsize);
+  setRowOffsets(0x00, 0x40, 0x00 + cols, 0x40 + cols);
+  begin();
 }
 
 void LiquidCrystal::setRowOffsets(int row0, int row1, int row2, int row3)
@@ -106,7 +126,7 @@ void LiquidCrystal::setRowOffsets(int row0, int row1, int row2, int row3)
 
 void LiquidCrystal::setCursor(uint8_t col, uint8_t row)
 {
-  const size_t max_lines = sizeof(_row_offsets) / sizeof(*_row_offsets);
+  const size_t max_lines = SIZE_OF_ROW_OFFSETS;
   if (row >= max_lines)
   {
     row = max_lines - 1; // we count rows starting w/ 0
@@ -115,20 +135,6 @@ void LiquidCrystal::setCursor(uint8_t col, uint8_t row)
   LiquidCrystal_Base::setCursor(col, row, _row_offsets);
 }
 
-/*********** mid level commands, for sending data/cmds */
-
-void LiquidCrystal::command(uint8_t value)
-{
-  send(value, COMMAND);
-}
-
-//todo move write to LiquidCrystal_Base
-
-inline size_t LiquidCrystal::write(uint8_t value)
-{
-  send(value, DATA);
-  return 1; // assume success
-}
 
 /************ low level data pushing commands **********/
 
@@ -149,7 +155,8 @@ void LiquidCrystal::send(uint8_t value, uint8_t mode)
       digitalWrite(_rw_pin, LOW);
     }
 
-    if (_displayfunction & LCD_8BITMODE)
+    // if (_displayfunction & LCD_8BITMODE)
+    if (getMode())
     {
       write8bits(value);
     }

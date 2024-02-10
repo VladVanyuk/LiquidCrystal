@@ -7,15 +7,20 @@ LiquidCrystal_I2C::LiquidCrystal_I2C(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t
 	this->init(lcd_addr, lcd_cols, lcd_rows, charsize);
 }
 
+LiquidCrystal_I2C::~LiquidCrystal_I2C()
+{
+}
+
+//calls firts
 void LiquidCrystal_I2C::init(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS)
 {
 
 	_addr = lcd_addr;
 	_backlightval = LCD_NOBACKLIGHT;
-	_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS; //todo move
 	LiquidCrystal_Base::init(lcd_cols, lcd_rows, charsize);
 }
 
+//calls second
 void LiquidCrystal_I2C::init(uint8_t mode = LCD_4BITMODE)
 {
 	_backlightval = LCD_NOBACKLIGHT;
@@ -23,6 +28,7 @@ void LiquidCrystal_I2C::init(uint8_t mode = LCD_4BITMODE)
 	begin();
 }
 
+//last
 void LiquidCrystal_I2C::begin()
 {
 	Wire.begin();
@@ -30,6 +36,10 @@ void LiquidCrystal_I2C::begin()
 	// according to datasheet, we need at least 40ms after power rises above 2.7V
 	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
 	delay(50);
+	
+	// wire->beginTransmission(_LCDSlaveAddresI2C);
+	// I2CReturnCode = wire->endTransmission();
+	// if (I2CReturnCode!= 0)
 
 	// Now we pull both RS and R/W low to begin commands
 	expanderWrite(_backlightval); // reset expanderand turn backlight off (Bit 8 =1)
@@ -39,6 +49,7 @@ void LiquidCrystal_I2C::begin()
 	backlight();
 }
 
+//calls 1 and 2 inits
 void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_4BITMODE)
 {
 	init(_addr, cols, rows, charsize);
@@ -71,19 +82,6 @@ bool LiquidCrystal_I2C::getBacklight()
 	return _backlightval == LCD_BACKLIGHT;
 }
 
-/*********** mid level commands, for sending data/cmds */
-
-void LiquidCrystal_I2C::command(uint8_t value)
-{
-	send(value, COMMAND);
-}
-
-//todo move write to LiquidCrystal_Base
-inline size_t LiquidCrystal_I2C::write(uint8_t value)
-{
-	send(value, DATA);
-	return 1;
-}
 
 /************ low level data pushing commands **********/
 
@@ -119,9 +117,17 @@ void LiquidCrystal_I2C::write4bits(uint8_t value)
 
 void LiquidCrystal_I2C::expanderWrite(uint8_t _data)
 {
+	 uint8_t status = 0;
+
 	Wire.beginTransmission(_addr);
-	Wire.write(_data | _backlightval); //	Wire.write((int)(_data) | _backlightval);
-	Wire.endTransmission();
+#if (ARDUINO < 100)
+      Wire.send(_data | _backlightval);
+#else
+      Wire.write(_data | _backlightval); //	Wire.write((int)(_data) | _backlightval);
+#endif
+	status = Wire.endTransmission();
+	// return ((status == 0));
+	// return (ret == 0) ? true : false; //false if error
 }
 
 void LiquidCrystal_I2C::pulseEnable(uint8_t _data)

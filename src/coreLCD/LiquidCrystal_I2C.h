@@ -1,7 +1,11 @@
 #ifndef LIQUID_CRYSTAL_I2C_h
 #define LIQUID_CRYSTAL_I2C_h
 
+#if (ARDUINO < 10000)
+#include <../Wire/Wire.h>
+#else
 #include <Wire.h>
+#endif
 #include "LiquidCrystal_Base.h"
 
 // flags for backlight control
@@ -18,8 +22,10 @@
 class LiquidCrystal_I2C : public LiquidCrystal_Base {
 public:
 	LiquidCrystal_I2C()=default;
-
 	LiquidCrystal_I2C(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS);
+	
+	~LiquidCrystal_I2C();
+
 	virtual void init(uint8_t mode = LCD_4BITMODE);
 	virtual void init(uint8_t lcd_addr, uint8_t lcd_cols,  uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS);
 	virtual void begin();
@@ -35,37 +41,13 @@ public:
 	void load_custom_character(uint8_t char_num, uint8_t *rows);	// alias for createChar()
 	void printstr(const char[]);
 
-	// inline void blink_on() { blink(); } 
-	// inline void blink_off() { noBlink(); }
-	// inline void cursor_on() { cursor(); }
-	// inline void cursor_off() { noCursor(); }
-
-	// inline void printLeft() { rightToLeft(); }
-	// inline void printRight() { leftToRight(); }
-	// inline void shiftIncrement() { autoscroll(); }
-	// inline void shiftDecrement() { noAutoscroll(); }
-
-	virtual size_t write(uint8_t value);
-	virtual void command(uint8_t value);
 	virtual void write4bits(uint8_t value);
-	//using Print::write;
-protected:
-	////Unsupported API functions (not implemented in this library)
-	// uint8_t status();
-	// void setContrast(uint8_t new_val);
-	// uint8_t keypad();
-	// void setDelay(int,int);
-	// void on();
-	// void off();
-	// uint8_t init_bargraph(uint8_t graphtype);
-	// void draw_horizontal_graph(uint8_t row, uint8_t column, uint8_t len,  uint8_t pixel_col_end);
-	// void draw_vertical_graph(uint8_t row, uint8_t column, uint8_t len,  uint8_t pixel_col_end);
 
 private:
 	void send(uint8_t value, uint8_t mode);
 	void expanderWrite(uint8_t _data);
 	void pulseEnable(uint8_t _data);
-	uint8_t _addr;
+	uint8_t _addr = LCD_DEFAULT_ADDR;
 	uint8_t _backlightval = LCD_NOBACKLIGHT;
 };
 

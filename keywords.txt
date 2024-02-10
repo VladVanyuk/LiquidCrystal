@@ -48,7 +48,7 @@ printstr	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
-
+LIQUIDCRYSTAL_I2C_VERSION	LITERAL1
 LCD_CLEARDISPLAY LITERAL1
 LCD_RETURNHOME LITERAL1
 LCD_ENTRYMODESET LITERAL1

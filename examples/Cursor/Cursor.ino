@@ -32,6 +32,8 @@
  by Tom Igoe
  modified 7 Nov 2016
  by Arturo Guadalupi
+ modified 2 Feb 2024
+ by Vladislav Vanyuk
 
  This example code is in the public domain.
 
@@ -40,25 +42,40 @@
 */
 
 // include the library code:
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_Base.h>
 
+//comment to use the normal LCD class
+#define LCD_I2C
+
+LiquidCrystal_Base *lcd;
+
+#ifndef LCD_I2C
 // initialize the library by associating any needed LCD interface pin
 // with the Arduino pin number it is connected to
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+LiquidCrystal lcd_normal(rs, en, d4, d5, d6, d7);
+#else
+LiquidCrystal_I2C lcd_i2c(0x27, 20, 4); //(0x27, 16, 2)
+#endif
 
 void setup() {
+#ifndef LCD_I2C
+  lcd = &lcd_normal;
+#else
+  lcd = &lcd_i2c;
+#endif
+
   // set up the LCD's number of columns and rows:
-  lcd.begin(16, 2);
+  lcd->begin(16, 2); //crush test: this code example is a modification of the original example to test the LiquidCrystal_I2C class 
   // Print a message to the LCD.
-  lcd.print("hello, world!");
+  lcd->print("Cursor ON/OFF");
 }
 
 void loop() {
   // Turn off the cursor:
-  lcd.noCursor();
+  lcd->noCursor();
   delay(500);
   // Turn on the cursor:
-  lcd.cursor();
+  lcd->cursor();
   delay(500);
 }

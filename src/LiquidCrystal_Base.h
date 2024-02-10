@@ -1,96 +1,11 @@
-#ifndef LiquidCrystal_Base_h
-#define LiquidCrystal_Base_h
 
-#include <inttypes.h>
+#pragma once
 #include <Arduino.h>
-#include <Print.h>
 
-// commands
-#define LCD_CLEARDISPLAY 0x01
-#define LCD_RETURNHOME 0x02
-#define LCD_ENTRYMODESET 0x04
-#define LCD_DISPLAYCONTROL 0x08
-#define LCD_CURSORSHIFT 0x10
-#define LCD_FUNCTIONSET 0x20
-#define LCD_SETCGRAMADDR 0x40
-#define LCD_SETDDRAMADDR 0x80
+#define LIQUIDCRYSTAL_BASE_VERSION	"1.2.0"
 
-// flags for display entry mode
-#define LCD_ENTRYRIGHT 0x00
-#define LCD_ENTRYLEFT 0x02
-#define LCD_ENTRYSHIFTINCREMENT 0x01
-#define LCD_ENTRYSHIFTDECREMENT 0x00
+#include "coreLCD/LCD_defs.h"
+#include "coreLCD/LiquidCrystal_Base.h"
+#include "coreLCD/LiquidCrystal.h"
+#include "coreLCD/LiquidCrystal_I2C.h"
 
-// flags for display on/off control
-#define LCD_DISPLAYON 0x04
-#define LCD_DISPLAYOFF 0x00
-#define LCD_CURSORON 0x02
-#define LCD_CURSOROFF 0x00
-#define LCD_BLINKON 0x01
-#define LCD_BLINKOFF 0x00
-
-// flags for display/cursor shift
-#define LCD_DISPLAYMOVE 0x08
-#define LCD_CURSORMOVE 0x00
-#define LCD_MOVERIGHT 0x04
-#define LCD_MOVELEFT 0x00
-
-// flags for function set
-#define LCD_8BITMODE 0x10
-#define LCD_4BITMODE 0x00
-#define LCD_2LINE 0x08
-#define LCD_1LINE 0x00
-#define LCD_5x10DOTS 0x04
-#define LCD_5x8DOTS 0x00
-
-#define LCD_DEFAULT_COLS 20
-#define LCD_DEFAULT_ROWS 4
-
-#define COMMAND                 0
-#define DATA                    1
-#define INIT_MODE               2
-
-class LiquidCrystal_Base : public Print
-{
-public:
-    virtual void init(uint8_t lcd_cols,  uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS);
-    virtual void init(uint8_t mode = LCD_4BITMODE); 
-    virtual void begin();
-    virtual void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_4BITMODE) = 0;
-    void clear();
-    void home();
-    void noDisplay();
-    void display();
-    void noBlink();
-    void blink();
-    void noCursor();
-    void cursor();
-    void scrollDisplayLeft();
-    void scrollDisplayRight();
-    void leftToRight();
-    void rightToLeft();
-    void autoscroll();
-    void noAutoscroll();
-    void createChar(uint8_t, uint8_t[]);
-    void setCursor(uint8_t col, uint8_t row, uint8_t offsets[]);
-    void printstr(const char[]);
-
-    virtual void setCursor(uint8_t col, uint8_t row);
-    virtual void command(uint8_t value);
-    virtual size_t write(uint8_t); //=0
-    virtual void write4bits(uint8_t value) = 0;
-    // virtual void write8bits(uint8_t value);
-    virtual void send(uint8_t value,  uint8_t mode) = 0;
-    // using Print::write;
-    uint8_t _displayfunction;
-    uint8_t _displaycontrol;
-    uint8_t _displaymode;
-
-    uint8_t _cols = LCD_DEFAULT_COLS;
-    uint8_t _rows = LCD_DEFAULT_ROWS;
-
-private:
-    //virtual void send(uint8_t, uint8_t);
-};
-
-#endif
