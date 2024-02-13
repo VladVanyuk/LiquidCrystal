@@ -74,7 +74,8 @@ public:
 #endif
 
     bool getMode() { return readBitFlag(_displayfunction, LCD_8BITMODE); }    
-
+    uint8_t getCols() { return _cols; }
+    uint8_t getRows() { return _rows; }
 protected:
 
     uint8_t _cols = LCD_DEFAULT_COLS;
