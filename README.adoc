@@ -11,7 +11,7 @@ This library allows an Arduino board to control liquid crystal displays (LCDs) b
 Virtual base class for (LCDs) devices, allows you to use one library for LiquidCrystal displays and LiquidCrystal_I2C displays as objects of child classes.
 Allows you to create general LCD object and use same methods for different derived classes.
 
-TIP: To find the latest versions, refer to https://github.com/VladVanyuk/BaseLiquidCrystal[this link].
+TIP: To find the latest versions, refer to https://github.com/VladVanyuk/LiquidCrystal_Base[this link].
 TIP: Online library showcase: https://wokwi.com/projects/385498212006391809[Wokwi Simulation].
 
 == Class hierarchy structure:
