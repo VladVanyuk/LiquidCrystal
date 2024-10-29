@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include "LiquidCrystal_I2C.h"
 
-LiquidCrystal_I2C::LiquidCrystal_I2C(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS)
+LiquidCrystal_I2C::LiquidCrystal_I2C(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize)
 {
 
 	this->init(lcd_addr, lcd_cols, lcd_rows, charsize);
@@ -12,7 +12,7 @@ LiquidCrystal_I2C::~LiquidCrystal_I2C()
 }
 
 //calls firts
-void LiquidCrystal_I2C::init(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize = LCD_5x8DOTS)
+void LiquidCrystal_I2C::init(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsize)
 {
 
 	_addr = lcd_addr;
@@ -21,7 +21,7 @@ void LiquidCrystal_I2C::init(uint8_t lcd_addr, uint8_t lcd_cols, uint8_t lcd_row
 }
 
 //calls second
-void LiquidCrystal_I2C::init(uint8_t mode = LCD_4BITMODE)
+void LiquidCrystal_I2C::init(uint8_t mode)
 {
 	_backlightval = LCD_NOBACKLIGHT;
 	LiquidCrystal_Base::init(mode);
@@ -50,7 +50,7 @@ void LiquidCrystal_I2C::begin()
 }
 
 //calls 1 and 2 inits
-void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS, uint8_t mode = LCD_4BITMODE)
+void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t rows, uint8_t charsize, uint8_t mode)
 {
 	init(_addr, cols, rows, charsize);
 	init(mode);

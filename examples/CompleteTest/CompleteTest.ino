@@ -1,4 +1,4 @@
-#include "LiquidCrystal_Include.h" //#include "LiquidCrystal_Base.h"
+#include "LiquidCrystal_Base.h"
 
 // LCD address and geometry for LCD 1602
 const byte lcdAddr_2004 = 0x27;  // Typical address of I2C backpack for 1602

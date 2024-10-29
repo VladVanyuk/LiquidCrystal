@@ -19,7 +19,7 @@ void LiquidCrystal_Base::init(uint8_t lcd_cols, uint8_t lcd_rows, uint8_t charsi
 }
 
 
-void LiquidCrystal_Base::init(uint8_t mode = LCD_4BITMODE) 
+void LiquidCrystal_Base::init(uint8_t mode) 
 {
   uint8_t charsize = LCD_5x8DOTS;
   
