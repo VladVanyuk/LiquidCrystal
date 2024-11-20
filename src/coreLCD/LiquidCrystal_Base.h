@@ -7,6 +7,10 @@
 #include <Arduino.h>
 #endif
 
+#ifdef ARDUINO_ARCH_ESP32
+#include <Wire.h>
+#endif 
+
 #ifdef __AVR__
    #include <avr/pgmspace.h>
 // #define FAST_MODE
